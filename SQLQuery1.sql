@@ -4,12 +4,12 @@
 
 --Exercicio 1
 /*
-1) Desenvolva uma procedure em PL/SQL que fa�a a verifica��o na tabela
+1) Desenvolva uma procedure em PL/SQL que faça a verificação na tabela
 aluno
-se o mesmo est� aprovado (maior igual a 7), recupera��o (maior que 4 e
+se o mesmo está aprovado (maior igual a 7), recuperação (maior que 4 e
 menor
 que 7) e reprovado (menor que 4). Crie a tabela com os seguintes campos
-c�digo, nome, nota1, nota2, coddis, mensalidade, qtdefalta)
+código, nome, nota1, nota2, coddis, mensalidade, qtdefalta)
 */
 
 create table aluno
@@ -41,7 +41,7 @@ declare @media numeric(5,2)
 SET @media = (select (nota1+nota2)/2 from aluno where codigo = @codigo)
 if @media >= 7
 begin
- select 'Aprovado M�dia = '+ convert(char(5),@media)
+ select 'Aprovado Média = '+ convert(char(5),@media)
 end
 else if @media < 4
  begin
@@ -49,14 +49,14 @@ else if @media < 4
  end
 else
 begin
- select 'Recupera��o Media = '+ convert(char(5),@media)
+ select 'Recuperação Media = '+ convert(char(5),@media)
 end
 
 EXEC sp_media 1
 
 /*
 2 Crie uma procedure em PL/SQL para inserir um aluno na tabela apenas se a
-quantidade de alunos for menor que 10 sen�o apresentar a quantidade e
+quantidade de alunos for menor que 10 senão apresentar a quantidade e
 mensagem turma lotada.
 */
 create procedure sp_qtde
@@ -76,8 +76,8 @@ exec sp_qtde
 select * from aluno
 
 /*
-3) Fa�a uma procedure em PL/SQL que apresente a quantidade de
-alunos aprovados, em recupera��o e reprovados.
+3) Faça uma procedure em PL/SQL que apresente a quantidade de
+alunos aprovados, em recuperação e reprovados.
 */
 create procedure sp_alunos
 as
@@ -98,20 +98,20 @@ begin
 end
 If @rec >= 1
 begin
- Select 'Qtde de Recupera��o '+ convert(char(5),@rec)
+ Select 'Qtde de Recuperação '+ convert(char(5),@rec)
 end
 
 exec sp_alunos
 
 /*
-4) Crie a tabela disciplina (c�digo, nome, cargaho) e
+4) Crie a tabela disciplina (código, nome, cargaho) e
 relacione com a tabela aluno
 e insira os dados na tabela disciplina e no campo da tabela aluno e elabore
 uma
 procedure em PL/SQL que apresente os seguintes valores:
-a) Para a disciplina Matem�tica mensalidade mais 10%
+a) Para a disciplina Matemática mensalidade mais 10%
 b) Para Banco de dados mensalidade menos 20 %
-c) Para Programa��o mensalidade mais 15%
+c) Para Programação mensalidade mais 15%
 */
 create procedure sp_disciplina
 @disci int
@@ -144,9 +144,9 @@ end
 exec sp_disciplina 2
 
 /*
-5)Desenvolva uma procedure em PL/SQL que passe por par�metro o c�digo
+5)Desenvolva uma procedure em PL/SQL que passe por parâmetro o código
 do
-aluno e se n�o encontrar mostrar a mensagem aluno n�o cadastrado, se
+aluno e se não encontrar mostrar a mensagem aluno não cadastrado, se
 encontrar mostrar o nome a media e a disciplina cursada.
 */
 create procedure sp_alu
@@ -171,3 +171,136 @@ begin
 end
 
 exec sp_alu 2 
+
+--Continuação STORED PROCEDURE.
+
+--Exercicios do dia 31/03.
+
+
+/*
+1) Crie um stored procedure em PL/SQL que passe por parâmetro
+o código da disciplina e mostre a qtde de alunos e a soma das
+mensalidades.
+*/
+
+create procedure sp_soma
+@coddis int
+as
+declare @qtde int
+declare @soma numeric(10,2)
+set @qtde = (select count(*) from aluno where coddis = @coddis )
+set @soma = (select sum(mensalidade) from aluno where coddis = @coddis )
+select ' A qtde de aluno da disciplina é '+convert(char(5),@qtde)
+select ' A soma das mensalidades da disciplina é '+
+convert(char(10),@soma)
+
+exec sp_soma 2
+
+
+/*
+2) Elabore uma procedure em PL/SQL que passe por parâmetro um
+código de aluno e verifique se está aprovado, recuperação ou
+reprovado, também está reprovado de a qtde de faltas for maior 3.
+*/
+
+create procedure sp_sit_alu
+@codalu int
+as
+declare @media numeric(5,2)
+declare @qtdefalta int
+set @media=(select (nota1+nota2)/2 from aluno where codigo =@codalu)
+set @qtdefalta=(select qtdefalta from aluno where codigo =@codalu)
+if @qtdefalta > 3
+begin
+Select 'Reprovado por Faltas'
+end
+else
+begin
+if @media >= 7
+begin
+select 'Aprovado'
+end
+else if @media < 4
+begin
+select 'Reprovado'
+end
+else
+begin
+Select 'Recuperação'
+end
+end
+
+exec sp_sit_alu 5
+
+
+/*
+3) Desenvolva uma procedure em PL/SQL que passe por parâmetro
+um código de aluno e atualize a mensalidade em 20% caso esteja
+reprovado, 10% para recuperação e um desconto de 30% se aprovado.
+*/
+
+create procedure sp_atu_mensa
+@codalu int
+as
+declare @media numeric(5,2)
+set @media=(select (nota1+nota2)/2 from aluno where codigo=@codalu)
+if @media >= 7
+begin
+update aluno set mensalidade = mensalidade * 0.7
+where codigo = @codalu
+end
+else if @media < 4
+begin
+update aluno set mensalidade = mensalidade * 1.2
+where codigo = @codalu
+end
+else
+begin
+update aluno set mensalidade = mensalidade * 1.1
+where codigo = @codalu
+end
+
+exec sp_atu_mensa 2
+select * from aluno
+
+
+/*
+4) Faça uma procedure em PL/SQL que receba por parâmetro
+um código de aluno e atualize a mensalidade em percentual,
+conforme a quantidade de faltas, ou seja, se 4 faltas aumentar
+em 4% a mensalidade do aluno.
+*/
+create procedure sp_atu_me
+@codalu int
+as
+declare @qtdefalta int
+set @qtdefalta=(select qtdefalta from aluno where codigo = @codalu)
+update aluno set mensalidade =
+mensalidade + (mensalidade*@qtdefalta)/100
+where codigo = @codalu
+
+exec sp_atu_me 5
+select * from aluno
+
+
+/*
+5) Elabore uma procedure em PL/SQL que verifique se o aluno
+tem mensalidade maior que 500 se sim adicione um novo campo
+email varchar(50) na tabela aluno e atualizar o email com
+as 3 primeiras letras do nome mais @unicesumar.edu.br
+*/
+
+--alter table aluno add email varchar(50)
+create procedure sp_email
+@codalu int
+as
+declare @mensalidade numeric(10,2)
+set @mensalidade=(select mensalidade from aluno where codigo =@codalu)
+if @mensalidade > 500
+begin
+update aluno set email=substring(nome,1,3)+'@unicesumar.edu.br'
+where codigo = @codalu
+end
+--execução
+exec sp_email 5
+select * from aluno
