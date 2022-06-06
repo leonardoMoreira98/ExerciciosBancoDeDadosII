@@ -308,7 +308,8 @@ select * from aluno
 
 --TRIGGERS 
 
-*Exercício para criar a tabela audit
+--Exercício para criar a tabela audit
+
 CREATE TABLE CLIENTE
 (
 CODCLI INT PRIMARY KEY IDENTITY,
@@ -361,8 +362,10 @@ SELECT * FROM NOTA
 --INSERT INTO NOTA VALUES (4520,1,'20220602',100, 2)
 --INSERT INTO NOTA VALUES (4510,1,'20220601',100, 10)
 SELECT * FROM AUDIT
-Exercício de Trigger para criar uma tabela que armazena os dados e
-valores referente aos percentuais dos produtos
+
+--Exercício de Trigger para criar uma tabela que armazena os dados e
+--valores referente aos percentuais dos produtos
+
 CREATE TABLE PRODUTO
 (
 CODIGO INT PRIMARY KEY IDENTITY,
@@ -412,7 +415,11 @@ END
 SELECT * FROM PRODUTO
 --INSERT INTO PRODUTO VALUES ('CPU', 100,5,5,10,15,6,3,17)
 SELECT * FROM AUDITPRO
-Exercícios de trigger de conta com pagamento
+
+
+--Exercícios de trigger de conta com pagamento
+
+
 CREATE TABLE CONTA
 (
 CODIGO INT PRIMARY KEY IDENTITY,
