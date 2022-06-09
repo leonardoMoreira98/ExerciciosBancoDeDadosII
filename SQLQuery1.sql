@@ -477,3 +477,38 @@ END
 INSERT INTO PAGTO VALUES ('20220602','D',100,1,'2022',456)
 SELECT * FROM CONTA
 SELECT * FROM PAGT
+
+--EXERCICIO CURSOR AULA 09/06/2022
+
+create table aluno
+(
+	cod int null,
+	nome varchar(40),
+)
+
+insert into aluno values (1,'Leonardo')
+insert into aluno values (2,'Paulo')
+insert into aluno values (3,'Mario')
+insert into aluno values (4,'Cintia')
+insert into aluno values (5,'Pedro')
+
+declare aluno_Cursor cursor for
+select cod,nome from aluno order by cod
+
+OPEN aluno_Cursor 
+
+declare @cod int 
+declare @nome varchar(40)
+
+fetch next from aluno_Cursor into @cod,@nome
+
+WHILE @@FETCH_STATUS = 0
+BEGIN 
+	PRINT 'Código do Aluno ' + cast(@cod as varchar)
+	PRINT 'Nome do Aluno ' + @nome
+	PRINT '____________________________________________'
+	FETCH NEXT FROM aluno_Cursor into @cod, @nome
+End -- FIM
+--fecha e desaloca
+CLOSE aluno_Cursor
+deallocate aluno_Cursor
